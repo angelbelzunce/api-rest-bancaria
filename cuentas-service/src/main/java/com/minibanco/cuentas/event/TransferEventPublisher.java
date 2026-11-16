@@ -22,6 +22,7 @@ public class TransferEventPublisher {
             kafkaTemplate.send(TOPIC, String.valueOf(transferId));
 
         } catch (Exception e) {
+            // If Kafka is down the transfer is already done, so we only log it
             log.warn("Could not publish event for transfer " + transferId);
 
         }
