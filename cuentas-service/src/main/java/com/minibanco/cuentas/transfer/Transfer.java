@@ -21,6 +21,7 @@ public class Transfer {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
 
+    // Unique in the DB too, in case two requests with the same key arrive at the same time
     @Column(nullable = false, unique = true)
     private String idempotencyKey;
 

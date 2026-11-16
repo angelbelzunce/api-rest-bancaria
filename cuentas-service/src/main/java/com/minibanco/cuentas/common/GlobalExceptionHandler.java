@@ -14,17 +14,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
-// Clase encargada de gestionar las excepciones que se lanzan en el proyecto y devolver el código http
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Maneja la excepcion de cuenta no encontrada y devuelve 404
     @ExceptionHandler(AccountNotFoundException.class)
     public ProblemDetail handleAccountNotFound(AccountNotFoundException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
-    // Maneja la excepcion de argmentos no válidos y devuelve 400
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleValidation(MethodArgumentNotValidException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Validation failed");
