@@ -32,23 +32,21 @@ public class TransferService {
 
     @Transactional
     public TransferResponse transfer(String idempotencyKey, CreateTransferRequest request) {
-        // 1. Idempotencia: si ya existe una transferencia con esta clave, devuelvo esa
+        // Same key as before: return the first result, don't move the money again
         Optional<Transfer> existing = transferRepository.findByIdempotencyKey(idempotencyKey);
         if (existing.isPresent()) {
             return TransferResponse.from(existing.get());
         }
-        // 2. Busco las dos cuentas (404 si no existen)
         Account source = accountRepository.findById(request.sourceAccountId()).orElseThrow(() -> new AccountNotFoundException(request.sourceAccountId()));
 
         Account target = accountRepository.findById(request.targetAccountId()).orElseThrow(() -> new AccountNotFoundException(request.targetAccountId()));
 
         BigDecimal commission = findStrategy(request.transferType()).calculate(request.amount());
 
-        // 3. Muevo el dinero
+        // The source account also pays the commission
         source.debit(request.amount().add(commission));
         target.credit(request.amount());
 
-        // 4. Guardo la transferencia
         Transfer transfer = new Transfer(request.sourceAccountId(), request.targetAccountId(), request.amount(), idempotencyKey, LocalDateTime.now(), "COMPLETED");
 
         TransferResponse saved = TransferResponse.from(transferRepository.save(transfer));

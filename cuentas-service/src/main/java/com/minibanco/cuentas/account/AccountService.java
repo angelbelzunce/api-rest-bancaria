@@ -30,7 +30,6 @@ public class AccountService {
         return AccountResponse.from(account);
     }
 
-    // Metodo encargado de paginar una consulta
     public Page<AccountResponse> findAll(Pageable pageable) {
 
         return accountRepository.findAll(pageable)
