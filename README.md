@@ -1,8 +1,12 @@
 # Mini-Banco
 
+[![CI](https://github.com/angelbelzunce/mini-banco/actions/workflows/ci.yaml/badge.svg)](https://github.com/angelbelzunce/mini-banco/actions/workflows/ci.yaml)
+
 [Versión en español](README.es.md)
 
 A small banking backend built with two Spring Boot microservices. I built it to practice the things a real banking project needs: exact money handling, atomic transfers, idempotency, concurrency control, testing, Docker and CI.
+
+> **Out of scope:** this is a practice project, not a real bank. There is no authentication, notifications are only kept in memory, and the database schema is created by Hibernate (no migrations).
 
 ## Services
 
