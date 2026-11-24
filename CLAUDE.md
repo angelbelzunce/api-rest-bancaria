@@ -1,4 +1,4 @@
-# Proyecto de prácticas: API REST Bancaria
+# Proyecto de prácticas: Mini-Banco
 
 > Este archivo es para Claude Code. Léelo entero antes de contestar al primer mensaje.
 
@@ -38,7 +38,7 @@ Piden: Java backend, Spring Boot, microservicios, **JUnit, Mockito y pruebas de 
 Funciones: desarrollar y evolucionar apps Spring Boot, diseñar microservicios, crear y consumir APIs REST, pruebas unitarias y de integración, **SOLID y patrones de diseño**, revisiones de código, resolución de incidencias.
 Se valora: banca o finanzas, **integración continua, Docker, Kubernetes, Kafka**, automatización de pruebas.
 
-## 4. El proyecto: API REST Bancaria
+## 4. El proyecto: Mini-Banco
 
 Proyecto pequeño, **de 2 días como máximo**, con dos microservicios y temática bancaria.
 
@@ -168,6 +168,6 @@ Cada hito termina con: tests en verde, commit en una rama `feature/...`, PR a `m
 
 Al terminar, ayuda a Ángel a preparar un resumen de 30 segundos, en español y en inglés, parecido a este:
 
-> "Para prepararme construí una API REST bancaria con dos microservicios en Spring Boot: transferencias atómicas con BigDecimal, idempotencia y bloqueo optimista, circuit breaker con Resilience4j, tests con JUnit, Mockito y Testcontainers, y todo dockerizado con integración continua en GitHub Actions."
+> "Para prepararme construí un mini-banco con dos microservicios en Spring Boot: transferencias atómicas con BigDecimal, idempotencia y bloqueo optimista, circuit breaker con Resilience4j, tests con JUnit, Mockito y Testcontainers, y todo dockerizado con integración continua en GitHub Actions."
 
 Dile que solo lo cuente **si de verdad ha llegado a hacerlo**; es mejor decir "llegué hasta el hito X" que exagerar.
