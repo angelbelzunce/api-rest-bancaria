@@ -1,6 +1,6 @@
-# Mini-Banco
+# Banking REST API
 
-[![CI](https://github.com/angelbelzunce/mini-banco/actions/workflows/ci.yaml/badge.svg)](https://github.com/angelbelzunce/mini-banco/actions/workflows/ci.yaml)
+[![CI](https://github.com/angelbelzunce/api-rest-bancaria/actions/workflows/ci.yaml/badge.svg)](https://github.com/angelbelzunce/api-rest-bancaria/actions/workflows/ci.yaml)
 
 [Versión en español](README.es.md)
 
