@@ -1,4 +1,4 @@
-# Mini-Banco
+# API REST Bancaria
 
 [![CI](https://github.com/angelbelzunce/api-rest-bancaria/actions/workflows/ci.yaml/badge.svg)](https://github.com/angelbelzunce/api-rest-bancaria/actions/workflows/ci.yaml)
 
