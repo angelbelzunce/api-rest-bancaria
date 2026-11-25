@@ -3,14 +3,18 @@ package com.minibanco.cuentas.transfer;
 import com.minibanco.cuentas.account.Account;
 import com.minibanco.cuentas.account.AccountNotFoundException;
 import com.minibanco.cuentas.account.AccountRepository;
+import com.minibanco.cuentas.commission.InternalCommissionStrategy;
+import com.minibanco.cuentas.event.TransferEventPublisher;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -123,6 +127,21 @@ public class TransferServiceTest {
         // Comprobamos que lanza la excepcion
         assertThrows(AccountNotFoundException.class, () -> transferService.transfer("key-1", request));
 
+    }
+
+    @Test
+    void transfer_whenSaveHitsUniqueIdempotencyKey_throwsDuplicateIdempotencyKeyException() {
+        // Built by hand because this test needs a real commission strategy
+        TransferService service = new TransferService(accountRepository, transferRepository,
+                List.of(new InternalCommissionStrategy()), mock(TransferEventPublisher.class));
+
+        CreateTransferRequest request = new CreateTransferRequest(1L, 2L, new BigDecimal("30.00"), TransferType.INTERNAL);
+
+        when(accountRepository.findById(1L)).thenReturn(Optional.of(new Account("Ana", new BigDecimal("100.00"))));
+        when(accountRepository.findById(2L)).thenReturn(Optional.of(new Account("Luis", new BigDecimal("0.00"))));
+        when(transferRepository.save(any())).thenThrow(new DataIntegrityViolationException("duplicate key"));
+
+        assertThrows(DuplicateIdempotencyKeyException.class, () -> service.transfer("key-1", request));
     }
 
 }

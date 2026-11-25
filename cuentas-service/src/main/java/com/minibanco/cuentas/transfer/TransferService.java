@@ -5,6 +5,7 @@ import com.minibanco.cuentas.account.AccountNotFoundException;
 import com.minibanco.cuentas.account.AccountRepository;
 import com.minibanco.cuentas.commission.CommissionStrategy;
 import com.minibanco.cuentas.event.TransferEventPublisher;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,7 +50,15 @@ public class TransferService {
 
         Transfer transfer = new Transfer(request.sourceAccountId(), request.targetAccountId(), request.amount(), idempotencyKey, LocalDateTime.now(), "COMPLETED");
 
-        TransferResponse saved = TransferResponse.from(transferRepository.save(transfer));
+        Transfer savedTransfer;
+        try {
+            savedTransfer = transferRepository.save(transfer);
+        } catch (DataIntegrityViolationException e) {
+            // The only unique column here is idempotencyKey: another request with the same key saved it first
+            throw new DuplicateIdempotencyKeyException();
+        }
+
+        TransferResponse saved = TransferResponse.from(savedTransfer);
         transferEventPublisher.publish(saved.id());
         return saved;
 
