@@ -6,7 +6,7 @@
 
 Un backend bancario pequeño hecho con dos microservicios en Spring Boot. Lo construí para practicar lo que necesita un proyecto bancario real: dinero exacto, transferencias atómicas, idempotencia, control de concurrencia, tests, Docker e integración continua.
 
-> **Fuera de alcance:** es un proyecto de práctica, no un banco real. No tiene autenticación, las notificaciones solo se guardan en memoria y el esquema de la base de datos lo crea Hibernate (sin migraciones).
+> **Fuera de alcance:** es un proyecto de práctica, no un banco real. No tiene autenticación y las notificaciones solo se guardan en memoria.
 
 ## Servicios
 
@@ -23,7 +23,7 @@ cliente ──HTTP──> cuentas-service ──> PostgreSQL
 
 ## Tecnologías
 
-Java 21, Spring Boot 4, Maven, Spring Web, Spring Data JPA, Jakarta Validation, springdoc-openapi (Swagger UI), PostgreSQL 17, Apache Kafka, JUnit 5, Mockito, Testcontainers, Docker, Docker Compose y GitHub Actions.
+Java 21, Spring Boot 4, Maven, Spring Web, Spring Data JPA, Jakarta Validation, springdoc-openapi (Swagger UI), PostgreSQL 17, Flyway, Apache Kafka, JUnit 5, Mockito, Testcontainers, Docker, Docker Compose y GitHub Actions.
 
 ## Cómo arrancarlo
 
@@ -139,4 +139,5 @@ GitHub Actions ejecuta `mvn verify` en los dos servicios en cada push y cada pul
 - **Bloqueo optimista.** `Account` tiene un campo `@Version`. Si dos operaciones modifican la misma cuenta a la vez, una de ellas falla y la API devuelve 409.
 - **Patrón Strategy para las comisiones.** `CommissionStrategy` tiene una implementación por tipo de transferencia: interna (sin comisión) y externa (1 %). Añadir un tipo nuevo es añadir una clase nueva, sin tocar `TransferService`.
 - **Kafka en lugar de una llamada REST.** Al principio, `cuentas-service` llamaba a `notificaciones-service` por REST, protegido con Resilience4j (timeout, reintentos y circuit breaker). Después lo cambié por un evento de Kafka, para que la transferencia no dependa de que el otro servicio esté levantado. Si Kafka está caído, la transferencia funciona igual y el error solo se registra en el log.
+- **Migraciones de base de datos con Flyway.** Las tablas las crean scripts SQL versionados en `db/migration`, no Hibernate. Hibernate solo comprueba que las tablas coinciden con las entidades (`ddl-auto: validate`). Los tests de integración ejecutan los mismos scripts sobre un PostgreSQL real.
 - **Perfiles de Spring.** El perfil `dev` tiene la configuración de la base de datos local. Las credenciales vienen de variables de entorno, nunca del código.

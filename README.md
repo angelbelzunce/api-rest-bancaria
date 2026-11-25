@@ -6,7 +6,7 @@
 
 A small banking backend built with two Spring Boot microservices. I built it to practice the things a real banking project needs: exact money handling, atomic transfers, idempotency, concurrency control, testing, Docker and CI.
 
-> **Out of scope:** this is a practice project, not a real bank. There is no authentication, notifications are only kept in memory, and the database schema is created by Hibernate (no migrations).
+> **Out of scope:** this is a practice project, not a real bank. There is no authentication, and notifications are only kept in memory.
 
 ## Services
 
@@ -23,7 +23,7 @@ client ──HTTP──> cuentas-service ──> PostgreSQL
 
 ## Tech stack
 
-Java 21, Spring Boot 4, Maven, Spring Web, Spring Data JPA, Jakarta Validation, springdoc-openapi (Swagger UI), PostgreSQL 17, Apache Kafka, JUnit 5, Mockito, Testcontainers, Docker, Docker Compose and GitHub Actions.
+Java 21, Spring Boot 4, Maven, Spring Web, Spring Data JPA, Jakarta Validation, springdoc-openapi (Swagger UI), PostgreSQL 17, Flyway, Apache Kafka, JUnit 5, Mockito, Testcontainers, Docker, Docker Compose and GitHub Actions.
 
 ## How to run it
 
@@ -139,4 +139,5 @@ GitHub Actions runs `mvn verify` for both services on every push and pull reques
 - **Optimistic locking.** `Account` has a `@Version` field. If two operations update the same account at the same time, one of them fails and the API returns 409.
 - **Strategy pattern for commissions.** `CommissionStrategy` has one implementation per transfer type: internal (no commission) and external (1%). Adding a new type means adding a new class, without changing `TransferService`.
 - **Kafka instead of a REST call.** First, `cuentas-service` called `notificaciones-service` by REST, protected with Resilience4j (timeout, retry and circuit breaker). Then I replaced it with a Kafka event, so the transfer doesn't depend on the other service being up. If Kafka is down, the transfer still works and the error is only logged.
+- **Database migrations with Flyway.** The tables are created by versioned SQL scripts in `db/migration`, not by Hibernate. Hibernate only validates that the tables match the entities (`ddl-auto: validate`). The integration tests run the same scripts on a real PostgreSQL.
 - **Spring profiles.** The `dev` profile has the local database settings. Credentials come from environment variables, never from the code.
