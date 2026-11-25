@@ -23,7 +23,7 @@ client ──HTTP──> cuentas-service ──> PostgreSQL
 
 ## Tech stack
 
-Java 21, Spring Boot 4, Maven, Spring Web, Spring Data JPA, Jakarta Validation, PostgreSQL 17, Apache Kafka, JUnit 5, Mockito, Testcontainers, Docker, Docker Compose and GitHub Actions.
+Java 21, Spring Boot 4, Maven, Spring Web, Spring Data JPA, Jakarta Validation, springdoc-openapi (Swagger UI), PostgreSQL 17, Apache Kafka, JUnit 5, Mockito, Testcontainers, Docker, Docker Compose and GitHub Actions.
 
 ## How to run it
 
@@ -52,6 +52,11 @@ You need Java 21 and Docker. The commands are for Bash (on Windows, use Git Bash
 This starts PostgreSQL, Kafka and both services.
 
 ## Endpoints
+
+The easiest way to see and try the API is Swagger UI. It is generated from the code:
+
+- cuentas-service: http://localhost:8080/swagger-ui.html
+- notificaciones-service: http://localhost:8081/swagger-ui.html
 
 ### cuentas-service (`localhost:8080`)
 
