@@ -4,7 +4,8 @@ import com.minibanco.cuentas.account.Account;
 import com.minibanco.cuentas.account.AccountNotFoundException;
 import com.minibanco.cuentas.account.AccountRepository;
 import com.minibanco.cuentas.commission.CommissionStrategy;
-import com.minibanco.cuentas.event.TransferEventPublisher;
+import com.minibanco.cuentas.event.TransferCompletedEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,14 +22,14 @@ public class TransferService {
     private final TransferRepository transferRepository;
 
     private final List<CommissionStrategy> commissionStrategies;
-    private final TransferEventPublisher transferEventPublisher;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public TransferService(AccountRepository accountRepository, TransferRepository transferRepository, List<CommissionStrategy> commissionStrategies, TransferEventPublisher transferEventPublisher) {
+    public TransferService(AccountRepository accountRepository, TransferRepository transferRepository, List<CommissionStrategy> commissionStrategies, ApplicationEventPublisher eventPublisher) {
         this.accountRepository = accountRepository;
         this.transferRepository = transferRepository;
 
         this.commissionStrategies = commissionStrategies;
-        this.transferEventPublisher = transferEventPublisher;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -59,7 +60,7 @@ public class TransferService {
         }
 
         TransferResponse saved = TransferResponse.from(savedTransfer);
-        transferEventPublisher.publish(saved.id());
+        eventPublisher.publishEvent(new TransferCompletedEvent(saved.id()));
         return saved;
 
     }
