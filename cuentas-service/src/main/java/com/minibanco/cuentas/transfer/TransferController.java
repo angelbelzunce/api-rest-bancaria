@@ -1,6 +1,8 @@
 package com.minibanco.cuentas.transfer;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +18,7 @@ public class TransferController {
     }
 
     @PostMapping
-    public ResponseEntity<TransferResponse> transfer(@RequestHeader("Idempotency-Key") String idempotencyKey, @RequestBody @Valid CreateTransferRequest request) {
+    public ResponseEntity<TransferResponse> transfer(@RequestHeader("Idempotency-Key") @NotBlank @Size(max = 255) String idempotencyKey, @RequestBody @Valid CreateTransferRequest request) {
         TransferResponse response = transferService.transfer(idempotencyKey, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

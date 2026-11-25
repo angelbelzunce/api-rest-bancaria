@@ -2,6 +2,7 @@ package com.minibanco.cuentas.common;
 
 import com.minibanco.cuentas.account.AccountNotFoundException;
 import com.minibanco.cuentas.account.InsufficientFundsException;
+import com.minibanco.cuentas.transfer.DuplicateIdempotencyKeyException;
 import com.minibanco.cuentas.transfer.TransferNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -43,13 +44,19 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
-    public ProblemDetail handleOptimisticLocking(ObjectOptimisticLockingFailureException ex) {
+    public ProblemDetail handleOptimisticLocking() {
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "The account was modified by another operation, please retry");
     }
 
     @ExceptionHandler(TransferNotFoundException.class)
-    public ProblemDetail handleTransferNotFound (TransferNotFoundException ex){
+    public ProblemDetail handleTransferNotFound(TransferNotFoundException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateIdempotencyKeyException.class)
+    public ProblemDetail handleDuplicateIdempotencyKey(DuplicateIdempotencyKeyException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+
     }
 
 }

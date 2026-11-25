@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TransferEventListener {
+
     private final NotificationService notificationService;
 
     public TransferEventListener(NotificationService notificationService){

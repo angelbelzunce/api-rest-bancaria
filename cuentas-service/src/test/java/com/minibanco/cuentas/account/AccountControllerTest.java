@@ -43,4 +43,14 @@ public class AccountControllerTest {
 
     }
 
+    @Test
+    void create_whenHolderIsTooLong_returns400() throws Exception {
+
+        mockMvc.perform(post("/api/cuentas")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"holder\":\"" + "a".repeat(256) + "\",\"initialBalance\":100.00}"))
+                .andExpect(status().isBadRequest());
+
+    }
+
 }
