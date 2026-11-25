@@ -27,7 +27,7 @@ Java 21, Spring Boot 4, Maven, Spring Web, Spring Data JPA, Jakarta Validation, 
 
 ## How to run it
 
-You need Java 21 and Docker. The commands are for Bash (on Windows, use Git Bash).
+You only need Docker. The services are compiled inside Docker with a multi-stage build, so you don't need Java or Maven to run them.
 
 1. Create a `.env` file in the root folder with the database credentials:
 
@@ -36,14 +36,7 @@ You need Java 21 and Docker. The commands are for Bash (on Windows, use Git Bash
    POSTGRES_PASSWORD=your_password
    ```
 
-2. Build the jars. The Dockerfiles copy the jar from `target/`:
-
-   ```bash
-   cd cuentas-service && ./mvnw clean package -DskipTests && cd ..
-   cd notificaciones-service && ./mvnw clean package -DskipTests && cd ..
-   ```
-
-3. Start everything:
+2. Start everything:
 
    ```bash
    docker compose up --build
@@ -124,7 +117,7 @@ Errors use the `ProblemDetail` format (RFC 9457), handled in one place with `@Re
 
 ## Tests
 
-Docker must be running, because the integration tests start a real PostgreSQL with Testcontainers.
+To run the tests you need Java 21. Docker must be running, because the integration tests start a real PostgreSQL with Testcontainers. The commands are for Bash (on Windows, use Git Bash).
 
 ```bash
 cd cuentas-service && ./mvnw verify
