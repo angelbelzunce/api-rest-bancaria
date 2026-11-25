@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
 public class TransferEventPublisher {
@@ -26,5 +28,10 @@ public class TransferEventPublisher {
             log.warn("Could not publish event for transfer " + transferId);
 
         }
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void onTransferCompleted(TransferCompletedEvent event){
+        publish(event.transferId());
     }
 }

@@ -17,6 +17,9 @@ import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ActiveProfiles("test")
 @Import(TestcontainersConfiguration.class)
@@ -96,6 +99,7 @@ public class TransferIntegrationTest {
 
         assertEquals(1, transferRepository.count());
         assertEquals(new BigDecimal("40.00"), accountRepository.findById(ana.getId()).get().getBalance());
+        verify(transferEventPublisher, times(1)).onTransferCompleted(any());
     }
 
     @Test
