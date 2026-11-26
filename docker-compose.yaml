@@ -35,7 +35,6 @@ services:
     volumes:
       - notificaciones-data:/var/lib/postgresql/data
 
-
   notificaciones-service:
     build: ./notificaciones-service
     ports:
@@ -49,6 +48,17 @@ services:
     depends_on:
       - "notificaciones-db"
       - "kafka"
+
+  auth-db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5434:5432"
+    volumes:
+      - auth-data:/var/lib/postgresql/data
 
   kafka:
     image: apache/kafka:3.9.1
@@ -70,3 +80,4 @@ services:
 volumes:
   cuentas-data:
   notificaciones-data:
+  auth-data:
