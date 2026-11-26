@@ -45,4 +45,12 @@ public class NotificationControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.transferId").value(1));
     }
+
+    @Test
+    void create_whenTransferIdIsMissing_returns400() throws Exception {
+        mockMvc.perform(post("/api/notificaciones")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"message\":\"Transfer completed\"}"))
+                .andExpect(status().isBadRequest());
+    }
 }
