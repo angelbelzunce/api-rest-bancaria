@@ -4,6 +4,7 @@ import com.minibanco.cuentas.TestcontainersConfiguration;
 import com.minibanco.cuentas.account.Account;
 import com.minibanco.cuentas.account.AccountRepository;
 import com.minibanco.cuentas.account.InsufficientFundsException;
+import com.minibanco.cuentas.outbox.OutboxEventRepository;
 import com.minibanco.cuentas.event.TransferEventPublisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,9 +18,6 @@ import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @ActiveProfiles("test")
 @Import(TestcontainersConfiguration.class)
@@ -35,9 +33,12 @@ public class TransferIntegrationTest {
     AccountRepository accountRepository;
     @Autowired
     TransferRepository transferRepository;
+    @Autowired
+    OutboxEventRepository outboxEventRepository;
 
     @BeforeEach
     void cleanDatabase() {
+        outboxEventRepository.deleteAll();
         transferRepository.deleteAll();
         accountRepository.deleteAll();
     }
@@ -99,7 +100,7 @@ public class TransferIntegrationTest {
 
         assertEquals(1, transferRepository.count());
         assertEquals(new BigDecimal("40.00"), accountRepository.findById(ana.getId()).get().getBalance());
-        verify(transferEventPublisher, times(1)).onTransferCompleted(any());
+        assertEquals(1, outboxEventRepository.count());
     }
 
     @Test

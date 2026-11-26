@@ -4,8 +4,8 @@ import com.minibanco.cuentas.account.Account;
 import com.minibanco.cuentas.account.AccountNotFoundException;
 import com.minibanco.cuentas.account.AccountRepository;
 import com.minibanco.cuentas.commission.CommissionStrategy;
-import com.minibanco.cuentas.event.TransferCompletedEvent;
-import org.springframework.context.ApplicationEventPublisher;
+import com.minibanco.cuentas.outbox.OutboxEvent;
+import com.minibanco.cuentas.outbox.OutboxEventRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,16 +20,18 @@ public class TransferService {
 
     private final AccountRepository accountRepository;
     private final TransferRepository transferRepository;
+    private final OutboxEventRepository outboxEventRepository;
 
     private final List<CommissionStrategy> commissionStrategies;
-    private final ApplicationEventPublisher eventPublisher;
 
-    public TransferService(AccountRepository accountRepository, TransferRepository transferRepository, List<CommissionStrategy> commissionStrategies, ApplicationEventPublisher eventPublisher) {
+
+    public TransferService(AccountRepository accountRepository, TransferRepository transferRepository,
+                           List<CommissionStrategy> commissionStrategies, OutboxEventRepository outboxEventRepository) {
         this.accountRepository = accountRepository;
         this.transferRepository = transferRepository;
+        this.outboxEventRepository = outboxEventRepository;
 
         this.commissionStrategies = commissionStrategies;
-        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -60,7 +62,7 @@ public class TransferService {
         }
 
         TransferResponse saved = TransferResponse.from(savedTransfer);
-        eventPublisher.publishEvent(new TransferCompletedEvent(saved.id()));
+        outboxEventRepository.save(new OutboxEvent(saved.id(), LocalDateTime.now()));
         return saved;
 
     }

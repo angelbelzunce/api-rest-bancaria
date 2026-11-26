@@ -21,4 +21,11 @@ public class NotificationService {
     public List<Notification> findAll() {
         return notificationRepository.findAll();
     }
+
+    public void saveIfAbsent(Long transferId){
+
+        if (!notificationRepository.existsByTransferId(transferId)){
+            save(transferId, "Transfer completed");
+        }
+    }
 }
