@@ -9,7 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.ApplicationEventPublisher;
+import com.minibanco.cuentas.outbox.OutboxEventRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.math.BigDecimal;
@@ -133,7 +133,7 @@ public class TransferServiceTest {
     void transfer_whenSaveHitsUniqueIdempotencyKey_throwsDuplicateIdempotencyKeyException() {
         // Built by hand because this test needs a real commission strategy
         TransferService service = new TransferService(accountRepository, transferRepository,
-                List.of(new InternalCommissionStrategy()), mock(ApplicationEventPublisher.class));
+                List.of(new InternalCommissionStrategy()), mock(OutboxEventRepository.class));
 
         CreateTransferRequest request = new CreateTransferRequest(1L, 2L, new BigDecimal("30.00"), TransferType.INTERNAL);
 
