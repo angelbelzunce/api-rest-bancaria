@@ -6,19 +6,19 @@
 
 A small banking backend built with two Spring Boot microservices. I built it to practice the things a real banking project needs: exact money handling, atomic transfers, idempotency, concurrency control, testing, Docker and CI.
 
-> **Out of scope:** this is a practice project, not a real bank. There is no authentication, and notifications are only kept in memory.
+> **Out of scope:** this is a practice project, not a real bank. There is no authentication.
 
 ## Services
 
 | Service | Port | What it does |
 |---|---|---|
 | `cuentas-service` | 8080 | Accounts and transfers. Stores data in PostgreSQL and publishes an event to Kafka after each transfer. |
-| `notificaciones-service` | 8081 | Listens to the transfer events from Kafka and stores a notification for each one (in memory). |
+| `notificaciones-service` | 8081 | Listens to the transfer events from Kafka and stores a notification for each one in its own PostgreSQL database. |
 
 ```
-client ──HTTP──> cuentas-service ──> PostgreSQL
+client ──HTTP──> cuentas-service ──> PostgreSQL (cuentas_db)
                        │
-                       └──event──> Kafka ──> notificaciones-service
+                       └──event──> Kafka ──> notificaciones-service ──> PostgreSQL (notificaciones_db)
 ```
 
 ## Tech stack
@@ -141,4 +141,5 @@ GitHub Actions runs `mvn verify` for both services on every push and pull reques
 - **Kafka instead of a REST call.** First, `cuentas-service` called `notificaciones-service` by REST, protected with Resilience4j (timeout, retry and circuit breaker). Then I replaced it with a Kafka event, so the transfer doesn't depend on the other service being up. If Kafka is down, the transfer still works and the error is only logged.
 - **The event is published after the commit.** A database rollback can't undo a message that was already sent to Kafka. So `TransferService` only publishes an internal Spring event, and `TransferEventPublisher` sends it to Kafka with `@TransactionalEventListener(phase = AFTER_COMMIT)`. If the transaction fails (for example, an optimistic locking conflict), no notification is sent. The concurrency test checks this.
 - **Database migrations with Flyway.** The tables are created by versioned SQL scripts in `db/migration`, not by Hibernate. Hibernate only validates that the tables match the entities (`ddl-auto: validate`). The integration tests run the same scripts on a real PostgreSQL.
+- **Database per service.** Each microservice has its own PostgreSQL database and its own Flyway migrations. No service reads the other's tables: they only talk through Kafka. `transfer_id` is unique in the notifications table, so the same transfer can't be notified twice.
 - **Spring profiles.** The `dev` profile has the local database settings. Credentials come from environment variables, never from the code.

@@ -24,13 +24,30 @@ services:
       - "cuentas-db"
       - "kafka"
 
+  notificaciones-db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: notificaciones_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - notificaciones-data:/var/lib/postgresql/data
+
+
   notificaciones-service:
     build: ./notificaciones-service
     ports:
       - "8081:8081"
     environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://notificaciones-db:5432/notificaciones_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
     depends_on:
+      - "notificaciones-db"
       - "kafka"
 
   kafka:
@@ -52,3 +69,4 @@ services:
 
 volumes:
   cuentas-data:
+  notificaciones-data:

@@ -17,14 +17,17 @@ public class NotificationController {
     }
 
     @PostMapping
-    public ResponseEntity<Notification> create(@RequestBody Notification notification) {
-        Notification saved = notificationService.save(notification);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    public ResponseEntity<NotificationResponse> create(@RequestBody CreateNotificationRequest request) {
+        Notification saved = notificationService.save(request.transferId(), request.message());
+        return ResponseEntity.status(HttpStatus.CREATED).body(NotificationResponse.from(saved));
 
     }
 
     @GetMapping
-    public List<Notification> findAll(){
-        return notificationService.findAll();
+    public List<NotificationResponse> findAll(){
+
+        return notificationService.findAll().stream()
+                .map(NotificationResponse::from)
+                .toList();
     }
 }

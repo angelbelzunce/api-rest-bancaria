@@ -21,6 +21,6 @@ public class TransferEventListenerTest {
     void onTransfer_savesNotificationWithTransferId() {
         transferEventListener.onTransfer("42");
 
-        verify(notificationService).save(new Notification(42L, "Transfer completed"));
+        verify(notificationService).save(42L, "Transfer completed");
     }
 }
