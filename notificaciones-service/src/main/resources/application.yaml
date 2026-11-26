@@ -6,6 +6,9 @@ spring:
     consumer:
       group-id: notificaciones
       auto-offset-reset: earliest
+  jpa:
+    hibernate:
+      ddl-auto: validate
 
 server:
   port: 8081

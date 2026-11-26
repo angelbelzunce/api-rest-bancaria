@@ -37,7 +37,7 @@ public class NotificationControllerTest {
 
     @Test
     void create_returns201() throws Exception {
-        when(notificationService.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(notificationService.save(any(), any())).thenReturn(new Notification(1L, "Transfer completed"));
 
         mockMvc.perform(post("/api/notificaciones")
                         .contentType(MediaType.APPLICATION_JSON)

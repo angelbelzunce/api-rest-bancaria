@@ -15,6 +15,6 @@ public class TransferEventListener {
     @KafkaListener(topics = "transfers")
     public void onTransfer(String message){
         Long transferId = Long.valueOf(message);
-        notificationService.save(new Notification(transferId, "Transfer completed"));
+        notificationService.save(transferId, "Transfer completed");
     }
 }

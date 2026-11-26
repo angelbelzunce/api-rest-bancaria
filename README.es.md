@@ -6,19 +6,19 @@
 
 Un backend bancario pequeño hecho con dos microservicios en Spring Boot. Lo construí para practicar lo que necesita un proyecto bancario real: dinero exacto, transferencias atómicas, idempotencia, control de concurrencia, tests, Docker e integración continua.
 
-> **Fuera de alcance:** es un proyecto de práctica, no un banco real. No tiene autenticación y las notificaciones solo se guardan en memoria.
+> **Fuera de alcance:** es un proyecto de práctica, no un banco real. No tiene autenticación.
 
 ## Servicios
 
 | Servicio | Puerto | Qué hace |
 |---|---|---|
 | `cuentas-service` | 8080 | Cuentas y transferencias. Guarda los datos en PostgreSQL y publica un evento en Kafka después de cada transferencia. |
-| `notificaciones-service` | 8081 | Escucha los eventos de transferencia de Kafka y guarda una notificación por cada uno (en memoria). |
+| `notificaciones-service` | 8081 | Escucha los eventos de transferencia de Kafka y guarda una notificación por cada uno en su propia base de datos PostgreSQL. |
 
 ```
-cliente ──HTTP──> cuentas-service ──> PostgreSQL
+cliente ──HTTP──> cuentas-service ──> PostgreSQL (cuentas_db)
                         │
-                        └──evento──> Kafka ──> notificaciones-service
+                        └──evento──> Kafka ──> notificaciones-service ──> PostgreSQL (notificaciones_db)
 ```
 
 ## Tecnologías
@@ -141,4 +141,5 @@ GitHub Actions ejecuta `mvn verify` en los dos servicios en cada push y cada pul
 - **Kafka en lugar de una llamada REST.** Al principio, `cuentas-service` llamaba a `notificaciones-service` por REST, protegido con Resilience4j (timeout, reintentos y circuit breaker). Después lo cambié por un evento de Kafka, para que la transferencia no dependa de que el otro servicio esté levantado. Si Kafka está caído, la transferencia funciona igual y el error solo se registra en el log.
 - **El evento se publica después del commit.** Un rollback de la base de datos no puede deshacer un mensaje que ya se envió a Kafka. Por eso `TransferService` solo lanza un evento interno de Spring, y `TransferEventPublisher` lo envía a Kafka con `@TransactionalEventListener(phase = AFTER_COMMIT)`. Si la transacción falla (por ejemplo, por un conflicto de bloqueo optimista), no se envía ninguna notificación. El test de concurrencia lo comprueba.
 - **Migraciones de base de datos con Flyway.** Las tablas las crean scripts SQL versionados en `db/migration`, no Hibernate. Hibernate solo comprueba que las tablas coinciden con las entidades (`ddl-auto: validate`). Los tests de integración ejecutan los mismos scripts sobre un PostgreSQL real.
+- **Una base de datos por servicio.** Cada microservicio tiene su propia base de datos PostgreSQL y sus propias migraciones de Flyway. Ningún servicio lee las tablas del otro: solo se comunican por Kafka. `transfer_id` es único en la tabla de notificaciones, así que la misma transferencia no se puede notificar dos veces.
 - **Perfiles de Spring.** El perfil `dev` tiene la configuración de la base de datos local. Las credenciales vienen de variables de entorno, nunca del código.

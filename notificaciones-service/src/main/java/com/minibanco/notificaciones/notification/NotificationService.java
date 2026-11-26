@@ -8,15 +8,17 @@ import java.util.List;
 @Service
 public class NotificationService {
 
-    private final List<Notification> notifications = new ArrayList<>();
+    private final NotificationRepository notificationRepository;
 
-    public Notification save(Notification notification){
-        notifications.add(notification);
+    public NotificationService(NotificationRepository notificationRepository){
+        this.notificationRepository = notificationRepository;
+    }
 
-        return notification;
+    public Notification save(Long transferId, String message){
+        return notificationRepository.save(new Notification(transferId, message));
     }
 
     public List<Notification> findAll() {
-        return notifications;
+        return notificationRepository.findAll();
     }
 }
