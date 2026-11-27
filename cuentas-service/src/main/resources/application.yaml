@@ -6,3 +6,6 @@ spring:
     producer:
       properties:
         max.block.ms: 2000
+
+jwt:
+  public-key: ${JWT_PUBLIC_KEY}

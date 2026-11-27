@@ -1,4 +1,5 @@
 services:
+
   cuentas-db:
     image: postgres:17
     environment:
@@ -20,6 +21,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
     depends_on:
       - "cuentas-db"
       - "kafka"
@@ -35,7 +37,6 @@ services:
     volumes:
       - notificaciones-data:/var/lib/postgresql/data
 
-
   notificaciones-service:
     build: ./notificaciones-service
     ports:
@@ -49,6 +50,30 @@ services:
     depends_on:
       - "notificaciones-db"
       - "kafka"
+
+  auth-db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5434:5432"
+    volumes:
+      - auth-data:/var/lib/postgresql/data
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://auth-db:5432/auth_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
+    depends_on:
+      - "auth-db"
 
   kafka:
     image: apache/kafka:3.9.1
@@ -70,3 +95,4 @@ services:
 volumes:
   cuentas-data:
   notificaciones-data:
+  auth-data:

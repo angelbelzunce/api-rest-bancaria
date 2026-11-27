@@ -1,5 +1,6 @@
 package com.minibanco.cuentas.account;
 
+import com.minibanco.cuentas.security.JwtValidator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -21,6 +22,9 @@ public class AccountControllerTest {
 
     @MockitoBean
     AccountService accountService;
+
+    @MockitoBean
+    JwtValidator jwtValidator;
 
     @Test
     void findById_whenAccountDoesNotExist_returns404() throws Exception {

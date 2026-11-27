@@ -24,3 +24,7 @@ jobs:
       - name: Build notificaciones-service
         run: mvn -B verify
         working-directory: notificaciones-service
+
+      - name: Build auth-service
+        run: mvn -B verify
+        working-directory: auth-service

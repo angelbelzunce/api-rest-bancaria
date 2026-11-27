@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: auth-service
+
+server:
+  port: 8082
+
+jwt:
+  private-key: ${JWT_PRIVATE_KEY}
+  expiration: 3600000
