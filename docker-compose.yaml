@@ -1,54 +1,54 @@
 services:
 
-  cuentas-db:
+  accounts-db:
     image: postgres:17
     environment:
-      POSTGRES_DB: cuentas_db
+      POSTGRES_DB: accounts_db
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
-      - cuentas-data:/var/lib/postgresql/data
+      - accounts-data:/var/lib/postgresql/data
 
-  cuentas-service:
-    build: ./cuentas-service
+  accounts-service:
+    build: ./accounts-service
     ports:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: dev
-      SPRING_DATASOURCE_URL: jdbc:postgresql://cuentas-db:5432/cuentas_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://accounts-db:5432/accounts_db
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
     depends_on:
-      - "cuentas-db"
+      - "accounts-db"
       - "kafka"
 
-  notificaciones-db:
+  notifications-db:
     image: postgres:17
     environment:
-      POSTGRES_DB: notificaciones_db
+      POSTGRES_DB: notifications_db
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5433:5432"
     volumes:
-      - notificaciones-data:/var/lib/postgresql/data
+      - notifications-data:/var/lib/postgresql/data
 
-  notificaciones-service:
-    build: ./notificaciones-service
+  notifications-service:
+    build: ./notifications-service
     ports:
       - "8081:8081"
     environment:
       SPRING_PROFILES_ACTIVE: dev
-      SPRING_DATASOURCE_URL: jdbc:postgresql://notificaciones-db:5432/notificaciones_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://notifications-db:5432/notifications_db
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
     depends_on:
-      - "notificaciones-db"
+      - "notifications-db"
       - "kafka"
 
   auth-db:
@@ -93,6 +93,6 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
 
 volumes:
-  cuentas-data:
-  notificaciones-data:
+  accounts-data:
+  notifications-data:
   auth-data:
