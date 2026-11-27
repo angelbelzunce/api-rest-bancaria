@@ -2,22 +2,25 @@ package com.minibanco.auth.jwt;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SecretKey;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Date;
 
 @Service
 public class JwtService {
 
-    private final SecretKey secretKey;
+    private final PrivateKey privateKey;
     private final long expiration;
 
-    public JwtService(@Value("${jwt.secret}") String secretKey,
-                      @Value("${jwt.expiration}") long expiration) {
-        this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+    public JwtService(@Value("${jwt.private-key}") String privateKey,
+                      @Value("${jwt.expiration}") long expiration) throws Exception {
+        byte[] keyBytes = Decoders.BASE64.decode(privateKey);
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
+        this.privateKey = KeyFactory.getInstance("RSA").generatePrivate(keySpec);
         this.expiration = expiration;
     }
 
@@ -28,7 +31,7 @@ public class JwtService {
                 .subject(username)
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + expiration))
-                .signWith(secretKey)
+                .signWith(privateKey)
                 .compact();
     }
 }
