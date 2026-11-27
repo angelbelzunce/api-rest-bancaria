@@ -1,6 +1,7 @@
 package com.minibanco.auth.user;
 
 import com.minibanco.auth.jwt.JwtService;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +30,7 @@ public class UserService {
     public UserResponse register(String username, String password){
 
         if (userRepository.existsByUsername(username)){
-            throw new RuntimeException(); //TODO: custom exception
+            throw new UsernameAlreadyExistsException("User with username " + username + " already exists");
         }
 
         String hashedPass = passwordEncoder.encode(password);
@@ -43,13 +44,13 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findByUsername(username);
 
         if (optionalUser.isEmpty()){
-            throw new RuntimeException(); // TODO: custom exeception
+            throw new BadCredentialsException("Invalid username or password");
         }
 
         User user = optionalUser.get();
 
         if (!passwordEncoder.matches(password, user.getPassword())){
-            throw new RuntimeException(); // TODO: custom exeception
+            throw new BadCredentialsException("Invalid username or password");
         }
 
         String token = jwtService.generateToken(username);
