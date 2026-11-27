@@ -1,6 +1,6 @@
 spring:
   application:
-    name: cuentas-service
+    name: accounts-service
   kafka:
     bootstrap-servers: localhost:9092
     producer:

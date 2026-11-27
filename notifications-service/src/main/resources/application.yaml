@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: notifications-service
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: notifications
+      auto-offset-reset: earliest
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+server:
+  port: 8081

@@ -17,13 +17,13 @@ jobs:
           java-version: 21
           cache: maven
 
-      - name: Build cuentas-service
+      - name: Build accounts-service
         run: mvn -B verify
-        working-directory: cuentas-service
+        working-directory: accounts-service
 
-      - name: Build notificaciones-service
+      - name: Build notifications-service
         run: mvn -B verify
-        working-directory: notificaciones-service
+        working-directory: notifications-service
 
       - name: Build auth-service
         run: mvn -B verify

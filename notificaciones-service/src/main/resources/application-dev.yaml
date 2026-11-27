@@ -1,5 +1,0 @@
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5433/notificaciones_db
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
