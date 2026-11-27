@@ -2,3 +2,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+
+jwt:
+  public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApIrVDd37jkzdeSuh+q5g+JZK/jP43vkJQU20Dk/iyJMC2TKjRYwrRAUieE9b7dysfkZTl7JHOtSxLOavrJKRSWeNxGyt6TE56O4PNJFaWEFgzFeDMC5muLpdKhzu4AnOfTm5I4vNf7861yAPsTJXhv3DSs7v2nFa+PJlsb+zjY7myd9Mwa/IxG+jR5mJMA2CH46BzUIej50FbaUFNkdj0sc/GHahrudP5QQQ0vM7FlwwHGkfsqjJro1aiJcfeStaaSuTA4iGKmTPRew6SsN/9HUfIYhq4aaF63ZUoGz1El/nYedZaQYqawN0j+9ZxmUz8pGe5RMwK/30RE4IhX952wIDAQAB

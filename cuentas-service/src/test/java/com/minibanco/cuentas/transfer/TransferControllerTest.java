@@ -1,5 +1,6 @@
 package com.minibanco.cuentas.transfer;
 
+import com.minibanco.cuentas.security.JwtValidator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -23,6 +24,9 @@ public class TransferControllerTest {
 
     @MockitoBean
     TransferService transferService;
+
+    @MockitoBean
+    JwtValidator jwtValidator;
 
     @Test
     void transfer_whenIdempotencyKeyIsDuplicated_returns409() throws Exception{
